@@ -4,10 +4,10 @@ const User = require("../model/userModel");
 // 1. Create a Post
 exports.addPost = async (req, res) => {
   try {
-    const newPost = await Post(req.body).save();
-    res.json({ message: "Post created", post: newPost });
+     await Post(req.body).save();
+    res.send({ message: "Post created"});
   } catch (error) {
-    res.json({ error: error.message });
+    res.send({ error: error.message });
   }
 };
 
