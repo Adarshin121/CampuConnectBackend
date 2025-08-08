@@ -10,8 +10,9 @@ const {
   deletePost
 } = require("../controller/postController");
 
+
 router.post("/add", addPost);
-router.get("/user/:userId", getVisiblePosts);
+router.get("/users/:userId", getVisiblePosts);
 router.get("/branch/:branch", getPostsByBranch);
 router.post("/like/:postId", likePost);
 router.post("/comment/:postId", commentPost);

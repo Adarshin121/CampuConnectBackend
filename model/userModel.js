@@ -18,7 +18,7 @@ var userSchema = mongoose.Schema({
   requestsSent: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
   requestsReceived: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
 
-  // userType: admin or user (optional)
+  // userType: admin or user
   userType: { type: String, enum: ["admin", "user"], default: "user" },
 
   // timestamps

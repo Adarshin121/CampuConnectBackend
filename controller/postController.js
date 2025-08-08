@@ -16,7 +16,7 @@ exports.getVisiblePosts = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId).populate("connections");
 
-    if (!user) return res.json({ error: "User not found" });
+    if (!user) return res.send({ error: "User not found" });
 
     const allVisibleUserIds = [user._id, ...user.connections.map(conn => conn._id)];
 
@@ -24,11 +24,13 @@ exports.getVisiblePosts = async (req, res) => {
       .populate("userId", "name profilePic branch")
       .sort({ createdAt: -1 });
 
-    res.json(posts);
+    res.json(posts)
   } catch (err) {
     res.json({ error: err.message });
   }
 };
+
+
 
 // 3. View Posts by Branch
 exports.getPostsByBranch = async (req, res) => {

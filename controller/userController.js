@@ -106,3 +106,87 @@ exports.acceptRequest = async (req, res) => {
     res.json({ error: err.message });
   }
 };
+// Additional needed APIs for connection system
+
+// Get received requests for a user
+exports.getReceivedRequests = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId)
+      .populate('requestsReceived', 'name profilePic branch year')
+      .select('requestsReceived');
+    
+    res.json(user.requestsReceived);
+  } catch (err) {
+    res.json({ error: err.message });
+  }
+};
+
+// Get sent requests for a user
+exports.getSentRequests = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId)
+      .populate('requestsSent', 'name profilePic branch year')
+      .select('requestsSent');
+    
+    res.json(user.requestsSent);
+  } catch (err) {
+    res.json({ error: err.message });
+  }
+};
+
+// Reject connection request
+exports.rejectRequest = async (req, res) => {
+  const { requestId, userId } = req.body;
+  try {
+    const requester = await User.findById(requestId);
+    const receiver = await User.findById(userId);
+
+    if (!requester || !receiver) return res.json({ error: "Users not found" });
+
+    // Remove from requests
+    requester.requestsSent = requester.requestsSent.filter(id => id != userId);
+    receiver.requestsReceived = receiver.requestsReceived.filter(id => id != requestId);
+
+    await requester.save();
+    await receiver.save();
+
+    res.json({ message: "Request rejected" });
+  } catch (err) {
+    res.json({ error: err.message });
+  }
+};
+
+// Cancel sent request
+exports.cancelRequest = async (req, res) => {
+  const { requestId, userId } = req.body;
+  try {
+    const requester = await User.findById(userId);
+    const receiver = await User.findById(requestId);
+
+    if (!requester || !receiver) return res.json({ error: "Users not found" });
+
+    // Remove from requests
+    requester.requestsSent = requester.requestsSent.filter(id => id != requestId);
+    receiver.requestsReceived = receiver.requestsReceived.filter(id => id != userId);
+
+    await requester.save();
+    await receiver.save();
+
+    res.json({ message: "Request cancelled" });
+  } catch (err) {
+    res.json({ error: err.message });
+  }
+};
+
+// Get user connections
+exports.getConnections = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId)
+      .populate('connections', 'name profilePic branch year')
+      .select('connections');
+    
+    res.json(user.connections);
+  } catch (err) {
+    res.json({ error: err.message });
+  }
+};
