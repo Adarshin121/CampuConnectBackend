@@ -1,4 +1,6 @@
 const User = require("../model/userModel");
+const mongoose = require('mongoose');
+const Message = require("../model/chatModel");
 
 // Register new user
 exports.signup = async (req, res) => {
@@ -182,11 +184,31 @@ exports.cancelRequest = async (req, res) => {
 exports.getConnections = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId)
-      .populate('connections', 'name profilePic branch year')
-      .select('connections');
-    
-    res.json(user.connections);
+      .populate('connections', 'name profilePic branch year');
+    res.json(user.connections || []);
   } catch (err) {
-    res.json({ error: err.message });
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Get Chat History
+exports.getChatHistory = async (req, res) => {
+  try {
+    const userId1 = new mongoose.Types.ObjectId(req.params.userId1);
+    const userId2 = new mongoose.Types.ObjectId(req.params.userId2);
+
+    const messages = await Message.find({
+      $or: [
+        { sender: userId1, recipient: userId2 },
+        { sender: userId2, recipient: userId1 }
+      ]
+    })
+      .sort({ createdAt: 1 })
+      .populate("sender recipient", "name profilePic");
+
+    res.json(messages || []);
+  } catch (err) {
+    console.error("Error fetching chat history:", err);
+    res.status(500).json({ message: err.message });
   }
 };

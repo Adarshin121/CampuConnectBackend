@@ -13,7 +13,8 @@ const {
   getSentRequests,
   rejectRequest,
   cancelRequest,
-  getConnections
+  getConnections,
+  getChatHistory
 } = require("../controller/userController");
 
 router.post("/signup", signup);
@@ -32,5 +33,8 @@ router.get('/sent-requests/:userId',getSentRequests);
 router.post('/reject-request', rejectRequest);
 router.post('/cancel-request', cancelRequest);
 router.get('/connections/:userId', getConnections);
+
+router.get('/connections/:userId', getConnections);
+router.get('/chat/:userId1/:userId2', getChatHistory);
 
 module.exports = router;

@@ -105,3 +105,16 @@ exports.deletePost = async (req, res) => {
     res.json({ error: err.message });
   }
 };
+
+// id Controller
+exports.getUserPosts = async (req, res) => {
+  try {
+    const posts = await Post.find({ userId: req.params.userId })
+      .populate("userId", "name profilePic branch")
+      .sort({ createdAt: -1 });
+    res.json(posts);
+  } catch (err) {
+    res.json({ error: err.message });
+  }
+};
+
